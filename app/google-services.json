@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1076027603921",
+    "project_id": "letsgetweddi",
+    "storage_bucket": "letsgetweddi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1076027603921:android:a4bfe8bfaeee81a754fef0",
+        "android_client_info": {
+          "package_name": "com.example.letsgetweddi"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqX3Ud6ZntZRvEcSAueRF5W3naok2OIfg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
