@@ -1,4 +1,4 @@
 package com.example.letsgetweddi.model
 
-class Tip {
+class Supplier {
 }
