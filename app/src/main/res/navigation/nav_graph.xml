@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/nav_home_page">
+
+    <fragment
+        android:id="@+id/nav_home_page"
+        android:name="com.example.letsgetweddi.ui.home.HomeFragment"
+        android:label="Home"
+        tools:layout="@layout/fragment_home" />
+
+    <fragment
+        android:id="@+id/nav_suppliers"
+        android:name="com.example.letsgetweddi.ui.gallery.GalleryFragment"
+        android:label="Suppliers"
+        tools:layout="@layout/fragment_gallery" />
+
+    <fragment
+        android:id="@+id/nav_djs"
+        android:name="com.example.letsgetweddi.ui.categories.DjsFragment"
+        android:label="DJs"
+        tools:layout="@layout/fragment_djs" />
+
+    <fragment
+        android:id="@+id/nav_halls"
+        android:name="com.example.letsgetweddi.ui.categories.HallsFragment"
+        android:label="Halls"
+        tools:layout="@layout/fragment_halls" />
+
+    <fragment
+        android:id="@+id/nav_photographers"
+        android:name="com.example.letsgetweddi.ui.categories.PhotographersFragment"
+        android:label="Photographers"
+        tools:layout="@layout/fragment_photographers" />
+
+    <fragment
+        android:id="@+id/nav_dresses"
+        android:name="com.example.letsgetweddi.ui.categories.DressesFragment"
+        android:label="Dresses"
+        tools:layout="@layout/fragment_dresses" />
+
+    <fragment
+        android:id="@+id/nav_hair"
+        android:name="com.example.letsgetweddi.ui.categories.HairFragment"
+        android:label="Hair"
+        tools:layout="@layout/fragment_hair" />
+
+    <fragment
+        android:id="@+id/nav_makeup"
+        android:name="com.example.letsgetweddi.ui.categories.MakeupFragment"
+        android:label="Makeup"
+        tools:layout="@layout/fragment_makeup" />
+
+    <fragment
+        android:id="@+id/nav_suits"
+        android:name="com.example.letsgetweddi.ui.categories.SuitsFragment"
+        android:label="Suits"
+        tools:layout="@layout/fragment_suits" />
+
+    <fragment
+        android:id="@+id/nav_favorites"
+        android:name="com.example.letsgetweddi.ui.favorites.FavoritesFragment"
+        android:label="Favorites"
+        tools:layout="@layout/fragment_favorites" />
+
+    <fragment
+        android:id="@+id/nav_tips"
+        android:name="com.example.letsgetweddi.ui.slideshow.SlideshowFragment"
+        android:label="Tips"
+        tools:layout="@layout/fragment_slideshow" />
+
+    <fragment
+        android:id="@+id/nav_profile"
+        android:name="com.example.letsgetweddi.ui.ProfileFragment"
+        android:label="Profile"
+        tools:layout="@layout/fragment_profile" />
+</navigation>

@@ -1,13 +1,60 @@
 <resources>
-    <string name="app_name">LetsGetWeddi</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
+    <!-- app -->
+    <string name="app_name">letsGetWeddi</string>
 
-    <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
+    <!-- Login/Register -->
+    <string name="login_title">Welcome back!</string>
+    <string name="register_title">Create an account</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Login</string>
+    <string name="register_button">Register</string>
+    <string name="dont_have_account">Do not have an account?</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="logout">Logout</string>
+
+    <!-- Home/Menu -->
+    <string name="home_title">Home</string>
+    <string name="menu_suppliers">Suppliers</string>
+    <string name="menu_checklist">Checklist</string>
+    <string name="menu_tips">Tips</string>
+    <string name="menu_chat">Chat</string>
+    <string name="menu_favorites">Favorites</string>
+    <string name="menu_profile">Profile</string>
+    <string name="menu_settings">Settings</string>
+
+    <!-- Errors / Toasts -->
+    <string name="error_login_failed">Login failed. Please try again.</string>
+    <string name="error_fill_fields">Please fill in all fields.</string>
+    <string name="success_account_created">Account created successfully!</string>
+    <string name="goodbye_message">You have logged out.</string>
+    <string name="register">Register</string>
+    <string name="groom">Groom</string>
+    <string name="bride">Bride</string>
+    <string name="password">Password</string>
+    <string name="email">Email</string>
+    <string name="full_name">Full Name</string>
+    <string name="create_account">Create Account</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="change_password">Change Password</string>
+    <string name="name">Name:</string>
+    <string name="profile">profile</string>
+    <string name="checklist_and_tips">checklist_and_tips</string>
+    <string name="suppliers">suppliers</string>
+    <string name="home_page">home page</string>
+    <string name="favorites">favorites</string>
+    <string name="favorites_screen">Favorites screen</string>
+    <string name="category_rings">category_rings</string>
+    <string name="category_flowers">category_flowers</string>
+    <string name="category_makeup">category_makeup</string>
+    <string name="category_hair">category_hair</string>
+    <string name="category_dresses">category_dresses</string>
+    <string name="category_photographers">category_photographers</string>
+    <string name="category_halls">category_halls</string>
+    <string name="category_djs">category_djs</string>
+    <string name="category_suits">category_suits</string>
+    <string name="supplier_description">Supplier Description</string>
+    <string name="location">Location</string>
+    <string name="supplier_name">Supplier Name</string>
 </resources>
