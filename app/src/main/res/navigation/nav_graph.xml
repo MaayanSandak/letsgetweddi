@@ -42,16 +42,10 @@
         tools:layout="@layout/fragment_dresses" />
 
     <fragment
-        android:id="@+id/nav_hair"
-        android:name="com.example.letsgetweddi.ui.categories.HairFragment"
+        android:id="@+id/nav_hair_and_makeup"
+        android:name="com.example.letsgetweddi.ui.categories.HairAndMakeupFragment"
         android:label="Hair"
-        tools:layout="@layout/fragment_hair" />
-
-    <fragment
-        android:id="@+id/nav_makeup"
-        android:name="com.example.letsgetweddi.ui.categories.MakeupFragment"
-        android:label="Makeup"
-        tools:layout="@layout/fragment_makeup" />
+        tools:layout="@layout/fragment_hair_and_makeup" />
 
     <fragment
         android:id="@+id/nav_suits"
@@ -66,10 +60,10 @@
         tools:layout="@layout/fragment_favorites" />
 
     <fragment
-        android:id="@+id/nav_tips"
-        android:name="com.example.letsgetweddi.ui.slideshow.SlideshowFragment"
-        android:label="Tips"
-        tools:layout="@layout/fragment_slideshow" />
+        android:id="@+id/nav_tips_and_checklist"
+        android:name="com.example.letsgetweddi.ui.categories.TipsAndChecklistFragment"
+        android:label="tips_and_checklist"
+        tools:layout="@layout/fragment_tips_and_checklist" />
 
     <fragment
         android:id="@+id/nav_profile"

@@ -40,7 +40,7 @@ class MainActivity : AppCompatActivity() {
             setOf(
                 R.id.nav_home,
                 R.id.nav_suppliers,
-                R.id.nav_tips,
+                R.id.nav_tips_and_checklist,
                 R.id.nav_profile
             ), drawerLayout
         )
@@ -59,10 +59,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_halls -> navController.navigate(R.id.nav_halls)
                 R.id.nav_photographers -> navController.navigate(R.id.nav_photographers)
                 R.id.nav_dresses -> navController.navigate(R.id.nav_dresses)
-                R.id.nav_hair -> navController.navigate(R.id.nav_hair)
-                R.id.nav_makeup -> navController.navigate(R.id.nav_makeup)
+                R.id.nav_hair_and_makeup -> navController.navigate(R.id.nav_hair_and_makeup)
                 R.id.nav_suits -> navController.navigate(R.id.nav_suits)
-                R.id.nav_tips -> navController.navigate(R.id.nav_tips)
+                R.id.nav_tips_and_checklist -> navController.navigate(R.id.nav_tips_and_checklist)
                 R.id.nav_favorites -> navController.navigate(R.id.nav_favorites)
                 R.id.nav_profile -> navController.navigate(R.id.nav_profile)
                 R.id.nav_logout -> {

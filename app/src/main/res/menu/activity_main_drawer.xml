@@ -25,25 +25,22 @@
                     android:icon="@drawable/dresses"
                     android:title="@string/category_dresses" />
                 <item
-                    android:id="@+id/nav_hair"
+                    android:id="@+id/nav_hair_and_makeup"
                     android:icon="@drawable/hair"
-                    android:title="@string/category_hair" />
-                <item
-                    android:id="@+id/nav_makeup"
-                    android:icon="@drawable/makeup"
-                    android:title="@string/category_makeup" />
+                    android:title="@string/category_hair_and_makeup" />
 
                 <item
                     android:id="@+id/nav_suits"
                     android:icon="@drawable/suits"
                     android:title="@string/category_suits" />
+
+                <item
+                    android:id="@+id/nav_tips_and_checklist"
+                    android:icon="@drawable/checklist"
+                    android:title="@string/checklist_and_tips" />
             </menu>
         </item>
 
-        <item
-            android:id="@+id/nav_tips"
-            android:icon="@drawable/checklist"
-            android:title="@string/checklist_and_tips" />
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/profile"

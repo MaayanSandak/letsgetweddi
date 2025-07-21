@@ -57,4 +57,11 @@
     <string name="supplier_description">Supplier Description</string>
     <string name="location">Location</string>
     <string name="supplier_name">Supplier Name</string>
+    <string name="checklist">Checklist</string>
+    <string name="tips">Tips</string>
+    <string name="category_hair_and_makeup">category_hair_and_makeup</string>
+    <string name="remove_from_fev">Remove from fev</string>
+    <string name="no_favorites_yet">No favorites yet</string>
+    <string name="favorites_list">Favorites list</string>
+    <string name="add_task">Add Task</string>
 </resources>

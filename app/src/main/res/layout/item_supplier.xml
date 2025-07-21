@@ -18,7 +18,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/ic_dj" />
+            android:src="@drawable/dj_img" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -49,6 +49,14 @@
                 android:text="@string/location"
                 android:textSize="14sp"
                 android:textColor="@android:color/darker_gray" />
+            <Button
+                android:id="@+id/buttonRemove"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/remove_from_fev"
+                android:layout_marginTop="8dp"
+                android:textColor="@android:color/holo_red_dark" />
+
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>
