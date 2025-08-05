@@ -48,6 +48,30 @@
         android:layout_marginHorizontal="24dp"
         android:minHeight="48dp"/>
 
+    <RadioGroup
+        android:id="@+id/roleGroup"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/editTextPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="24dp">
+
+        <RadioButton
+            android:id="@+id/radioSupplier"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/supplier" />
+
+        <RadioButton
+            android:id="@+id/radioClient"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/client" />
+    </RadioGroup>
+
     <Button
         android:id="@+id/buttonCreateAccount"
         android:layout_width="0dp"

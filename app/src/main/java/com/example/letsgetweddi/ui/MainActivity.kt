@@ -2,27 +2,29 @@ package com.example.letsgetweddi.ui
 
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
-import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.navigation.NavigationView
-import androidx.navigation.findNavController
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.GravityCompat
 import com.example.letsgetweddi.R
 import com.example.letsgetweddi.databinding.ActivityMainBinding
+import com.google.android.material.navigation.NavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
     private lateinit var appBarConfiguration: AppBarConfiguration
+    private lateinit var drawerLayout: DrawerLayout
+    private lateinit var navView: NavigationView
+    private var userType: String = "Client"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +33,8 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        val drawerLayout: DrawerLayout = binding.drawerLayout
-        val navView: NavigationView = binding.navView
-
+        drawerLayout = binding.drawerLayout
+        navView = binding.navView
         navController = findNavController(R.id.nav_host_fragment_content_main)
 
         appBarConfiguration = AppBarConfiguration(
@@ -48,19 +49,35 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        FirebaseDatabase.getInstance().getReference("Users")
+            .child(uid)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                userType = snapshot.child("userType").value.toString()
+                if (userType == "Supplier") {
+                    navView.menu.clear()
+                    navView.inflateMenu(R.menu.supplier_main_drawer)
+                } else {
+                    navView.menu.clear()
+                    navView.inflateMenu(R.menu.client_main_drawer)
+                }
+                setupNavMenu()
+            }
+    }
 
+    private fun setupNavMenu() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
-                R.id.nav_home -> navController.navigate(R.id.nav_home_page)
+                R.id.nav_home -> navController.navigate(R.id.nav_home)
                 R.id.nav_suppliers -> navController.navigate(R.id.nav_suppliers)
-                R.id.nav_djs -> navController.navigate(R.id.nav_djs)
-                R.id.nav_halls -> navController.navigate(R.id.nav_halls)
-                R.id.nav_photographers -> navController.navigate(R.id.nav_photographers)
-                R.id.nav_dresses -> navController.navigate(R.id.nav_dresses)
-                R.id.nav_hair_and_makeup -> navController.navigate(R.id.nav_hair_and_makeup)
-                R.id.nav_suits -> navController.navigate(R.id.nav_suits)
+                R.id.nav_calendar -> if (userType == "Supplier") {
+                    navController.navigate(R.id.nav_supplier_calendar)
+                }
+                R.id.nav_edit_supplier -> if (userType == "Supplier") {
+                    navController.navigate(R.id.nav_edit_supplier)
+                }
+                R.id.nav_all_suppliers -> navController.navigate(R.id.nav_all_suppliers)
                 R.id.nav_tips_and_checklist -> navController.navigate(R.id.nav_tips_and_checklist)
                 R.id.nav_favorites -> navController.navigate(R.id.nav_favorites)
                 R.id.nav_profile -> navController.navigate(R.id.nav_profile)

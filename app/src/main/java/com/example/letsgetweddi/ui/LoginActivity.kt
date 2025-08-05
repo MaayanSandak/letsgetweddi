@@ -6,6 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.letsgetweddi.databinding.ActivityLoginBinding
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : AppCompatActivity() {
 
@@ -29,9 +30,23 @@ class LoginActivity : AppCompatActivity() {
                 auth.signInWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            Toast.makeText(this, "Login successful!", Toast.LENGTH_SHORT).show()
-                            startActivity(Intent(this, MainActivity::class.java))
-                            finish()
+                            val uid = auth.currentUser!!.uid
+                            FirebaseDatabase.getInstance().getReference("Users")
+                                .child(uid)
+                                .get()
+                                .addOnSuccessListener { snapshot ->
+                                    val userType = snapshot.child("userType").value.toString()
+                                    if (userType == "Supplier") {
+                                        startActivity(Intent(this, MainActivity::class.java).apply {
+                                            putExtra("userType", "Supplier")
+                                        })
+                                    } else {
+                                        startActivity(Intent(this, MainActivity::class.java).apply {
+                                            putExtra("userType", "Client")
+                                        })
+                                    }
+                                    finish()
+                                }
                         } else {
                             Toast.makeText(this, "Login failed. Please try again.", Toast.LENGTH_SHORT).show()
                         }
@@ -40,9 +55,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         binding.buttonRegister.setOnClickListener {
-            val intent = Intent(this, RegisterActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, RegisterActivity::class.java))
         }
-
     }
 }
