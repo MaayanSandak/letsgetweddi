@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.letsgetweddi.databinding.FragmentTipsAndChecklistBinding
@@ -21,8 +22,14 @@ class TipsAndChecklistFragment : Fragment() {
     private lateinit var binding: FragmentTipsAndChecklistBinding
     private lateinit var database: DatabaseReference
 
-    private val checklist = mutableListOf<ChecklistItem>()
-    private val tips = mutableListOf<Tip>()
+    private lateinit var checklistAdapter: ChecklistAdapter
+    private lateinit var tipAdapter: TipAdapter
+
+    private val allChecklistItems = mutableListOf<ChecklistItem>()
+    private val filteredChecklistItems = mutableListOf<ChecklistItem>()
+
+    private val allTips = mutableListOf<Tip>()
+    private val filteredTips = mutableListOf<Tip>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentTipsAndChecklistBinding.inflate(inflater, container, false)
@@ -37,8 +44,8 @@ class TipsAndChecklistFragment : Fragment() {
         binding.recyclerChecklist.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerTips.layoutManager = LinearLayoutManager(requireContext())
 
-        val checklistAdapter = ChecklistAdapter(checklist, userId)
-        val tipAdapter = TipAdapter(tips)
+        checklistAdapter = ChecklistAdapter(filteredChecklistItems, userId)
+        tipAdapter = TipAdapter(filteredTips)
 
         binding.recyclerChecklist.adapter = checklistAdapter
         binding.recyclerTips.adapter = tipAdapter
@@ -67,16 +74,16 @@ class TipsAndChecklistFragment : Fragment() {
         database.child("checklist").child(userId)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    checklist.clear()
+                    allChecklistItems.clear()
                     for (child in snapshot.children) {
                         val item = child.getValue(ChecklistItem::class.java)
                         val id = child.key
                         if (item != null && id != null) {
                             val fullItem = item.copy(id = id)
-                            checklist.add(fullItem)
+                            allChecklistItems.add(fullItem)
                         }
                     }
-                    checklistAdapter.notifyDataSetChanged()
+                    filterChecklist("")
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -85,15 +92,54 @@ class TipsAndChecklistFragment : Fragment() {
         database.child("tips")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    tips.clear()
+                    allTips.clear()
                     for (child in snapshot.children) {
                         val tip = child.getValue(Tip::class.java)
-                        if (tip != null) tips.add(tip)
+                        if (tip != null) allTips.add(tip)
                     }
-                    tipAdapter.notifyDataSetChanged()
+                    filterTips("")
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
             })
+
+        binding.searchViewChecklist.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = true
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterChecklist(newText.orEmpty())
+                return true
+            }
+        })
+
+        binding.searchViewTips.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = true
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterTips(newText.orEmpty())
+                return true
+            }
+        })
+    }
+
+    private fun filterChecklist(query: String) {
+        val lowerQuery = query.lowercase()
+        filteredChecklistItems.clear()
+        filteredChecklistItems.addAll(
+            allChecklistItems.filter {
+                it.task?.lowercase()?.contains(lowerQuery) == true
+            }
+        )
+        checklistAdapter.notifyDataSetChanged()
+    }
+
+
+    private fun filterTips(query: String) {
+        val lowerQuery = query.lowercase()
+        filteredTips.clear()
+        filteredTips.addAll(
+            allTips.filter {
+                it.title?.lowercase()?.contains(lowerQuery) == true || it.content?.lowercase()?.contains(lowerQuery) == true
+            }
+        )
+        tipAdapter.notifyDataSetChanged()
     }
 }
