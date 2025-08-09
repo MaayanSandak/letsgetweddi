@@ -4,75 +4,111 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.CalendarView
 import androidx.fragment.app.Fragment
-import com.example.letsgetweddi.R
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.letsgetweddi.databinding.FragmentSupplierCalendarBinding
+import com.google.firebase.database.*
+
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 class SupplierCalendarFragment : Fragment() {
 
-    private lateinit var calendarView: CalendarView
-    private lateinit var saveButton: Button
-    private lateinit var datesListView: ListView
-    private val selectedDates = mutableListOf<String>()
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    private val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    private var _binding: FragmentSupplierCalendarBinding? = null
+    private val binding get() = _binding!!
+
+    private lateinit var db: DatabaseReference
+    private lateinit var adapter: SupplierDatesAdapter
+    private val dates = ArrayList<String>()
+    private var supplierId: String = ""
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        supplierId = arguments?.getString(ARG_SUPPLIER_ID).orEmpty()
+        db = FirebaseDatabase.getInstance().getReference("SuppliersAvailability").child(supplierId)
+    }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_supplier_calendar, container, false)
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentSupplierCalendarBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
-        calendarView = view.findViewById(R.id.calendarView)
-        saveButton = view.findViewById(R.id.buttonSaveDate)
-        datesListView = view.findViewById(R.id.listViewDates)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        calendarView.setOnDateChangeListener { _, year, month, dayOfMonth ->
-            val date = String.format(Locale.getDefault(), "%04d-%02d-%02d", year, month + 1, dayOfMonth)
-            if (!selectedDates.contains(date)) {
-                selectedDates.add(date)
-                updateList()
+        adapter = SupplierDatesAdapter(dates, object : SupplierDatesAdapter.Listener {
+            override fun onRemove(dateIso: String) {
+                db.child(dateIso).removeValue()
             }
+        })
+        binding.recyclerDates.layoutManager = LinearLayoutManager(requireContext())
+        binding.recyclerDates.adapter = adapter
+
+        binding.calendarView.setOnDateChangeListener { _: CalendarView, year: Int, month: Int, dayOfMonth: Int ->
+            val iso = toIso(year, month, dayOfMonth)
+            toggleDate(iso)
         }
 
-        saveButton.setOnClickListener {
-            saveDatesToFirebase()
+        observeDates()
+    }
+
+    private fun observeDates() {
+        binding.progressBar.visibility = View.VISIBLE
+        db.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                dates.clear()
+                for (c in snapshot.children) {
+                    val key = c.key ?: continue
+                    val isAvailable = c.getValue(Boolean::class.java) ?: false
+                    if (isAvailable) dates.add(key)
+                }
+                dates.sort()
+                adapter.notifyDataSetChanged()
+                binding.textEmpty.visibility = if (dates.isEmpty()) View.VISIBLE else View.GONE
+                binding.progressBar.visibility = View.GONE
+            }
+            override fun onCancelled(error: DatabaseError) {
+                binding.progressBar.visibility = View.GONE
+            }
+        })
+    }
+
+    private fun toggleDate(iso: String) {
+        db.child(iso).get().addOnSuccessListener { snap ->
+            val exists = snap.exists() && (snap.getValue(Boolean::class.java) == true)
+            if (exists) {
+                db.child(iso).removeValue()
+            } else {
+                db.child(iso).setValue(true)
+            }
         }
-
-        loadDatesFromFirebase()
-
-        return view
     }
 
-    private fun updateList() {
-        val adapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, selectedDates)
-        datesListView.adapter = adapter
+    private fun toIso(year: Int, monthZeroBased: Int, day: Int): String {
+        val cal = Calendar.getInstance()
+        cal.set(Calendar.YEAR, year)
+        cal.set(Calendar.MONTH, monthZeroBased)
+        cal.set(Calendar.DAY_OF_MONTH, day)
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        sdf.timeZone = TimeZone.getTimeZone("UTC")
+        return sdf.format(cal.time)
     }
 
-    private fun saveDatesToFirebase() {
-        val ref = FirebaseDatabase.getInstance().getReference("SuppliersAvailability").child(uid)
-        val datesMap = selectedDates.associateWith { true }
-        ref.setValue(datesMap)
-            .addOnSuccessListener {
-                Toast.makeText(requireContext(), "Availability saved", Toast.LENGTH_SHORT).show()
-            }
-            .addOnFailureListener {
-                Toast.makeText(requireContext(), "Failed to save availability", Toast.LENGTH_SHORT).show()
-            }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
-    private fun loadDatesFromFirebase() {
-        val ref = FirebaseDatabase.getInstance().getReference("SuppliersAvailability").child(uid)
-        ref.get().addOnSuccessListener { snapshot ->
-            selectedDates.clear()
-            snapshot.children.forEach { dateSnap ->
-                selectedDates.add(dateSnap.key ?: "")
-            }
-            updateList()
+    companion object {
+        private const val ARG_SUPPLIER_ID = "supplierId"
+        fun newInstance(supplierId: String): SupplierCalendarFragment {
+            val f = SupplierCalendarFragment()
+            f.arguments = Bundle().apply { putString(ARG_SUPPLIER_ID, supplierId) }
+            return f
         }
     }
 }

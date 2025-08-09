@@ -12,31 +12,38 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LetsGetWeddi"
         tools:targetApi="31">
-        <activity android:name=".ui.supplier.SupplierDashboardActivity" />
+
+        <!-- Deep link: letsgetweddi://availability/<anything> -->
+        <activity
+            android:name=".ui.supplier.SupplierCalendarActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="letsgetweddi" android:host="availability" />
+                <data android:pathPrefix="/" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false" />
+
         <activity
             android:name=".ui.providers.ProviderDetailsActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".ui.RegisterActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="true" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
         <activity
             android:name=".ui.LoginActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:exported="true" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -44,10 +51,10 @@
             android:theme="@style/Theme.LetsGetWeddi">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

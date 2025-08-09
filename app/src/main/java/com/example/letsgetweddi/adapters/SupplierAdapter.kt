@@ -57,7 +57,7 @@ class SupplierAdapter(
                     .child(supplierId)
                     .removeValue()
                     .addOnSuccessListener {
-                        val index = bindingAdapterPosition
+                        val index = this@SupplierViewHolder.adapterPosition
                         if (index != RecyclerView.NO_POSITION) {
                             suppliers.removeAt(index)
                             notifyItemRemoved(index)
