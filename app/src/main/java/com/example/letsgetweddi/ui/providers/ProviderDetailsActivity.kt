@@ -58,12 +58,18 @@ class ProviderDetailsActivity : AppCompatActivity() {
             binding.textLocation.text = supplierLocation
 
             if (supplierImageUrl.isNotEmpty()) {
-                Picasso.get().load(supplierImageUrl)
+                com.squareup.picasso.Picasso.get()
+                    .load(supplierImageUrl)
                     .placeholder(android.R.drawable.ic_menu_gallery)
                     .into(binding.imageProvider)
             } else {
                 binding.imageProvider.setImageResource(android.R.drawable.ic_menu_gallery)
             }
+
+            val fragment = com.example.letsgetweddi.ui.gallery.GalleryFragment.newInstance(supplierId)
+            supportFragmentManager.beginTransaction()
+                .replace(com.example.letsgetweddi.R.id.galleryContainer, fragment)
+                .commit()
         }
     }
 
