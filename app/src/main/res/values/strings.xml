@@ -92,7 +92,13 @@
     <string name="category">Category</string>
     <string name="save">Save</string>
     <string name="phone">phone</string>
-
+    <string name="availability">Availability</string>
+    <string name="review_comment">review_comment</string>
+    <string name="reviews">Reviews</string>
+    <string name="edit_supplier">Edit supplier</string>
+    <string name="open_chat">Open chat</string>
+    <string name="contact_via_whatsapp">Contact via WhatsApp</string>
+    <string name="provider_image">Provider image</string>
 
 
 </resources>

@@ -1,14 +1,16 @@
 package com.example.letsgetweddi.ui.providers
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.letsgetweddi.R
+import com.example.letsgetweddi.adapters.ReviewAdapter
 import com.example.letsgetweddi.databinding.ActivityProviderDetailsBinding
 import com.example.letsgetweddi.model.Review
 import com.example.letsgetweddi.ui.chat.ChatActivity
@@ -16,17 +18,29 @@ import com.example.letsgetweddi.ui.gallery.GalleryFragment
 import com.example.letsgetweddi.ui.supplier.SupplierDashboardActivity
 import com.example.letsgetweddi.utils.RoleManager
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.*
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
+import com.kizitonwose.calendar.core.CalendarDay
+import com.kizitonwose.calendar.core.DayPosition
+import com.kizitonwose.calendar.core.firstDayOfWeekFromLocale
+import com.kizitonwose.calendar.view.CalendarView
+import com.kizitonwose.calendar.view.MonthDayBinder
+import com.kizitonwose.calendar.view.ViewContainer
 import com.squareup.picasso.Picasso
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class ProviderDetailsActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityProviderDetailsBinding
 
     private lateinit var reviewsRef: DatabaseReference
-    private lateinit var reviewAdapter: com.example.letsgetweddi.adapters.ReviewAdapter
+    private lateinit var reviewAdapter: ReviewAdapter
     private val reviewsList = mutableListOf<Review>()
-    private val availabilityList = mutableListOf<String>()
 
     private var supplierId: String = ""
     private var supplierPhone: String = ""
@@ -40,6 +54,17 @@ class ProviderDetailsActivity : AppCompatActivity() {
     private var currentRole: String = "client"
     private var currentUserSupplierId: String? = null
 
+    private val isoFormatter: DateTimeFormatter =
+        DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.US)
+    private var availableDates: Set<LocalDate> = emptySet()
+
+
+    private inner class DayViewContainer(view: View) : ViewContainer(view) {
+        val text: TextView = view.findViewById(R.id.calendarDayText)
+        val dot: View = view.findViewById(R.id.dot)
+        lateinit var date: LocalDate
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityProviderDetailsBinding.inflate(layoutInflater)
@@ -48,6 +73,7 @@ class ProviderDetailsActivity : AppCompatActivity() {
         supplierId = intent.getStringExtra("id") ?: intent.getStringExtra("supplierId") ?: return
 
         loadSupplierDetails()
+        setupCalendarView()
         loadAvailability()
         setupButtons()
         loadReviews()
@@ -75,40 +101,85 @@ class ProviderDetailsActivity : AppCompatActivity() {
                 binding.imageProvider.setImageResource(android.R.drawable.ic_menu_gallery)
             }
 
-            val fragment = GalleryFragment.newInstance(supplierId)
             supportFragmentManager.beginTransaction()
-                .replace(com.example.letsgetweddi.R.id.galleryContainer, fragment)
+                .replace(R.id.galleryContainer, GalleryFragment.newInstance(supplierId))
                 .commit()
         }
     }
 
-    private fun loadAvailability() {
-        val ref = FirebaseDatabase.getInstance().getReference("SuppliersAvailability").child(supplierId)
-        ref.get().addOnSuccessListener { snapshot ->
-            availabilityList.clear()
-            snapshot.children.forEach { dateSnap ->
-                val date = dateSnap.key ?: ""
-                availabilityList.add(date)
+    private fun setupCalendarView() {
+        val cv: CalendarView = binding.calendarAvailability
+        val currentMonth = java.time.YearMonth.now()
+        val firstDayOfWeek = firstDayOfWeekFromLocale()
+
+        cv.dayViewResource = R.layout.item_calendar_day
+
+        cv.dayBinder = object : MonthDayBinder<DayViewContainer> {
+            override fun create(view: View): DayViewContainer = DayViewContainer(view)
+
+            override fun bind(container: DayViewContainer, day: CalendarDay) {
+                val date = day.date
+                container.date = date
+                container.text.text = date.dayOfMonth.toString()
+
+                val inMonth = day.position == DayPosition.MonthDate
+                container.text.alpha = if (inMonth) 1f else 0.35f
+
+                val isAvailable = availableDates.contains(date)
+                container.dot.visibility = if (isAvailable && inMonth) View.VISIBLE else View.GONE
             }
-            if (availabilityList.isEmpty()) {
-                availabilityList.add("No available dates")
-            }
-            val adapter = ArrayAdapter(this, android.R.layout.simple_list_item_1, availabilityList)
-            binding.listAvailability.adapter = adapter
         }
+
+        cv.setup(
+            startMonth = currentMonth.minusMonths(12),
+            endMonth   = currentMonth.plusMonths(12),
+            firstDayOfWeek = firstDayOfWeek
+        )
+        cv.scrollToMonth(currentMonth)
+    }
+
+
+
+
+
+    private fun loadAvailability() {
+        val ref = FirebaseDatabase.getInstance()
+            .getReference("SuppliersAvailability")
+            .child(supplierId)
+
+        binding.progressBar.visibility = View.VISIBLE
+        ref.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val list = mutableListOf<LocalDate>()
+                for (child in snapshot.children) {
+                    val key = child.key ?: continue
+                    try { list.add(LocalDate.parse(key, isoFormatter)) } catch (_: Exception) {}
+                }
+                availableDates = list.toSet()
+
+                binding.calendarAvailability.notifyCalendarChanged()
+                binding.progressBar.visibility = View.GONE
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                binding.progressBar.visibility = View.GONE
+                Toast.makeText(
+                    this@ProviderDetailsActivity,
+                    "Failed to load availability",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        })
     }
 
     private fun setupButtons() {
         binding.buttonChat.setOnClickListener {
-            val intent = Intent(this, ChatActivity::class.java)
-            intent.putExtra("supplierId", supplierId)
-            startActivity(intent)
+            startActivity(Intent(this, ChatActivity::class.java).putExtra("supplierId", supplierId))
         }
 
         binding.buttonContact.setOnClickListener {
             if (supplierPhone.isNotEmpty()) {
-                val intent = Intent(Intent.ACTION_VIEW, "https://wa.me/$supplierPhone".toUri())
-                startActivity(intent)
+                startActivity(Intent(Intent.ACTION_VIEW, "https://wa.me/$supplierPhone".toUri()))
             } else {
                 Toast.makeText(this, "No phone number available", Toast.LENGTH_SHORT).show()
             }
@@ -116,8 +187,8 @@ class ProviderDetailsActivity : AppCompatActivity() {
 
         binding.buttonFavorite.setOnClickListener {
             val user = FirebaseAuth.getInstance().currentUser ?: return@setOnClickListener
-            val userId = user.uid
-            val favRef = FirebaseDatabase.getInstance().getReference("favorites").child(userId).child(supplierId)
+            val favRef = FirebaseDatabase.getInstance()
+                .getReference("favorites").child(user.uid).child(supplierId)
 
             if (isFavorite) {
                 favRef.removeValue().addOnSuccessListener {
@@ -150,26 +221,22 @@ class ProviderDetailsActivity : AppCompatActivity() {
 
     private fun preloadFavoriteState() {
         val user = FirebaseAuth.getInstance().currentUser ?: return
-        val userId = user.uid
-        val favRef = FirebaseDatabase.getInstance().getReference("favorites").child(userId).child(supplierId)
-        favRef.get().addOnSuccessListener { snapshot ->
-            isFavorite = snapshot.exists()
-            updateFavoriteButton()
-        }
+        FirebaseDatabase.getInstance()
+            .getReference("favorites").child(user.uid).child(supplierId)
+            .get().addOnSuccessListener { snapshot ->
+                isFavorite = snapshot.exists()
+                updateFavoriteButton()
+            }
     }
 
     private fun updateFavoriteButton() {
         if (isFavorite) {
             binding.buttonFavorite.text = "Remove from favorites"
-            binding.buttonFavorite.icon = androidx.core.content.ContextCompat.getDrawable(
-                this, com.example.letsgetweddi.R.drawable.ic_favorite_24
-            )
+            binding.buttonFavorite.icon = ContextCompat.getDrawable(this, R.drawable.ic_favorite_24)
             binding.buttonFavorite.contentDescription = "Remove from favorites"
         } else {
             binding.buttonFavorite.text = "Add to favorites"
-            binding.buttonFavorite.icon = androidx.core.content.ContextCompat.getDrawable(
-                this, com.example.letsgetweddi.R.drawable.ic_favorite_border_24
-            )
+            binding.buttonFavorite.icon = ContextCompat.getDrawable(this, R.drawable.ic_favorite_border_24)
             binding.buttonFavorite.contentDescription = "Add to favorites"
         }
     }
@@ -198,7 +265,7 @@ class ProviderDetailsActivity : AppCompatActivity() {
 
     private fun loadReviews() {
         reviewsRef = FirebaseDatabase.getInstance().getReference("reviews").child(supplierId)
-        reviewAdapter = com.example.letsgetweddi.adapters.ReviewAdapter(reviewsList)
+        reviewAdapter = ReviewAdapter(reviewsList)
         binding.recyclerReviews.layoutManager = LinearLayoutManager(this)
         binding.recyclerReviews.adapter = reviewAdapter
 

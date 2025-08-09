@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -9,12 +11,13 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+
         <ImageView
             android:id="@+id/imageProvider"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:scaleType="centerCrop"
-            android:contentDescription="Provider image" />
+            android:contentDescription="@string/provider_image" />
 
         <TextView
             android:id="@+id/textName"
@@ -23,21 +26,21 @@
             android:textStyle="bold"
             android:textSize="20sp"
             android:paddingTop="8dp"
-            android:text="Name" />
+            android:text="@string/name" />
 
         <TextView
             android:id="@+id/textDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
-            android:text="Description" />
+            android:text="@string/description" />
 
         <TextView
             android:id="@+id/textLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="4dp"
-            android:text="Location" />
+            android:text="@string/location" />
 
         <FrameLayout
             android:id="@+id/galleryContainer"
@@ -46,22 +49,32 @@
             android:layout_marginTop="12dp" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Availability"
-            android:paddingTop="12dp" />
-
-        <ListView
-            android:id="@+id/listAvailability"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp" />
+            android:text="@string/availability"
+            android:textStyle="bold"
+            android:layout_marginTop="12dp" />
+
+        <com.kizitonwose.calendar.view.CalendarView
+            android:id="@+id/calendarAvailability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_gravity="center_horizontal"
+            android:visibility="gone" />
+
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonFavorite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Add to favorites"
+            android:text="@string/add_to_favorites"
             app:icon="@drawable/ic_favorite_border_24"
             app:iconGravity="textStart"
             app:iconPadding="8dp" />
@@ -70,25 +83,25 @@
             android:id="@+id/buttonContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Contact via WhatsApp" />
+            android:text="@string/contact_via_whatsapp" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonChat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Open chat" />
+            android:text="@string/open_chat" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEditSupplier"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit supplier"
+            android:text="@string/edit_supplier"
             android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Reviews"
+            android:text="@string/reviews"
             android:paddingTop="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -103,16 +116,25 @@
             android:numStars="5"
             android:stepSize="1" />
 
-        <EditText
-            android:id="@+id/editReviewComment"
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Write a review" />
+            android:layout_height="wrap_content">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editReviewComment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="48dp"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:inputType="textMultiLine"
+                android:hint="@string/review_comment" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonSubmitReview"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit review" />
+            android:text="@string/submit_review" />
     </LinearLayout>
 </ScrollView>

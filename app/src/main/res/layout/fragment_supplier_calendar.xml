@@ -15,8 +15,15 @@
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_gravity="center_horizontal"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="12dp"
         android:visibility="gone" />
+
+    <Button
+        android:id="@+id/btnClearAll"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Clear All"
+        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/textEmpty"
@@ -33,5 +40,4 @@
         android:layout_height="0dp"
         android:layout_marginTop="8dp"
         android:layout_weight="1" />
-
 </LinearLayout>
