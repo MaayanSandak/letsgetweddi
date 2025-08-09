@@ -17,8 +17,11 @@ class FavoritesFragment : Fragment() {
     private lateinit var binding: FragmentFavoritesBinding
     private lateinit var database: DatabaseReference
     private val favorites = mutableListOf<Supplier>()
+    private lateinit var adapter: SupplierAdapter
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -26,31 +29,31 @@ class FavoritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        adapter = SupplierAdapter(favorites, isFavorites = true)
         binding.recyclerFavorites.layoutManager = LinearLayoutManager(requireContext())
-        val adapter = SupplierAdapter(favorites, isFavorites = true)
         binding.recyclerFavorites.adapter = adapter
 
         val user = FirebaseAuth.getInstance().currentUser ?: return
         val userId = user.uid
 
         database = FirebaseDatabase.getInstance().getReference("favorites").child(userId)
-        database.addListenerForSingleValueEvent(object : ValueEventListener {
+        database.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 favorites.clear()
                 for (child in snapshot.children) {
-                    val supplier = child.getValue(Supplier::class.java)
+                    val supplier = child.getValue(Supplier::class.java)?.copy(
+                        id = child.child("id").getValue(String::class.java) ?: child.key
+                    )
                     if (supplier != null) favorites.add(supplier)
                 }
+                favorites.sortBy { it.name ?: "" }
                 adapter.notifyDataSetChanged()
-
-                if (favorites.isEmpty()) {
-                    binding.textEmpty.visibility = View.VISIBLE
-                } else {
-                    binding.textEmpty.visibility = View.GONE
-                }
+                binding.textEmpty.visibility = if (favorites.isEmpty()) View.VISIBLE else View.GONE
             }
 
-            override fun onCancelled(error: DatabaseError) {}
+            override fun onCancelled(error: DatabaseError) {
+                binding.textEmpty.visibility = View.VISIBLE
+            }
         })
     }
 }

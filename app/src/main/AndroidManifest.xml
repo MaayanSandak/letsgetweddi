@@ -12,6 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LetsGetWeddi"
         tools:targetApi="31">
+        <activity android:name=".ui.supplier.SupplierDashboardActivity" />
         <activity
             android:name=".ui.chat.ChatActivity"
             android:exported="false" />

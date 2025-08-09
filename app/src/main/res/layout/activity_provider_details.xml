@@ -1,124 +1,118 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/imageProvider"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:scaleType="centerCrop" />
+            android:scaleType="centerCrop"
+            android:contentDescription="Provider image" />
 
         <TextView
             android:id="@+id/textName"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="22sp"
             android:textStyle="bold"
-            android:paddingTop="12dp" />
+            android:textSize="20sp"
+            android:paddingTop="8dp"
+            android:text="Name" />
 
         <TextView
             android:id="@+id/textDescription"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:paddingTop="8dp" />
+            android:paddingTop="4dp"
+            android:text="Description" />
 
         <TextView
             android:id="@+id/textLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:textColor="@android:color/darker_gray"
-            android:paddingTop="4dp" />
-
-        <Button
-            android:id="@+id/buttonContact"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/contact_on_whatsapp"
-            android:layout_marginTop="16dp" />
+            android:paddingTop="4dp"
+            android:text="Location" />
 
-        <Button
-            android:id="@+id/buttonChat"
+        <FrameLayout
+            android:id="@+id/galleryContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/send_message"
-            android:layout_marginTop="8dp" />
+            android:layout_marginTop="12dp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Available Dates"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"/>
+            android:text="Availability"
+            android:paddingTop="12dp" />
 
         <ListView
             android:id="@+id/listAvailability"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonFavorite"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/add_to_favorites"
-            android:layout_marginTop="8dp" />
+            android:text="Add to favorites"
+            app:icon="@drawable/ic_favorite_border_24"
+            app:iconGravity="textStart"
+            app:iconPadding="8dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Gallery"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp" />
-
-        <FrameLayout
-            android:id="@+id/galleryContainer"
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonContact"
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:layout_marginTop="8dp" />
+            android:layout_height="wrap_content"
+            android:text="Contact via WhatsApp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonChat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Open chat" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonEditSupplier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Edit supplier"
+            android:visibility="gone" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Reviews"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp" />
-
-        <RatingBar
-            android:id="@+id/ratingBarNewReview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:numStars="5"
-            android:stepSize="0.5" />
-
-        <EditText
-            android:id="@+id/editReviewComment"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/write_your_review" />
-
-        <Button
-            android:id="@+id/buttonSubmitReview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/submit_review" />
+            android:paddingTop="16dp" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerReviews"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
+        <RatingBar
+            android:id="@+id/ratingBarNewReview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1" />
+
+        <EditText
+            android:id="@+id/editReviewComment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Write a review" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonSubmitReview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit review" />
     </LinearLayout>
 </ScrollView>

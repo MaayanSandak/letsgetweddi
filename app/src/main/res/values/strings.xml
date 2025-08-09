@@ -83,7 +83,8 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="supplier">Supplier</string>
     <string name="client">Client</string>
-
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="supplier_image">Supplier image</string>
     <string name="select_image">Select Image</string>
     <string name="business_name">Business Name</string>

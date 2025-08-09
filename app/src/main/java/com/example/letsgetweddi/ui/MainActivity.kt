@@ -2,29 +2,24 @@ package com.example.letsgetweddi.ui
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
+import androidx.activity.addCallback
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
-import androidx.drawerlayout.widget.DrawerLayout
-import androidx.navigation.NavController
-import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import com.example.letsgetweddi.R
 import com.example.letsgetweddi.databinding.ActivityMainBinding
+import com.example.letsgetweddi.ui.favorites.FavoritesFragment
+import com.example.letsgetweddi.ui.supplier.SupplierDashboardActivity
+import com.example.letsgetweddi.utils.RoleManager
 import com.google.android.material.navigation.NavigationView
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var navController: NavController
-    private lateinit var appBarConfiguration: AppBarConfiguration
-    private lateinit var drawerLayout: DrawerLayout
-    private lateinit var navView: NavigationView
-    private var userType: String = "Client"
+    private var currentRole: String = "client"
+    private var currentUserSupplierId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,67 +28,78 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.appBarMain.toolbar)
 
-        drawerLayout = binding.drawerLayout
-        navView = binding.navView
-        navController = findNavController(R.id.nav_host_fragment_content_main)
-
-        appBarConfiguration = AppBarConfiguration(
-            setOf(
-                R.id.nav_home,
-                R.id.nav_suppliers,
-                R.id.nav_tips_and_checklist,
-                R.id.nav_profile
-            ), drawerLayout
+        val toggle = ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.appBarMain.toolbar,
+            R.string.navigation_drawer_open,
+            R.string.navigation_drawer_close
         )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
 
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
+        binding.navView.setNavigationItemSelectedListener(this)
 
-        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
-        FirebaseDatabase.getInstance().getReference("Users")
-            .child(uid)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                userType = snapshot.child("userType").value.toString()
-                if (userType == "Supplier") {
-                    navView.menu.clear()
-                    navView.inflateMenu(R.menu.supplier_main_drawer)
-                } else {
-                    navView.menu.clear()
-                    navView.inflateMenu(R.menu.client_main_drawer)
-                }
-                setupNavMenu()
+        onBackPressedDispatcher.addCallback(this) {
+            if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                binding.drawerLayout.closeDrawer(GravityCompat.START)
+            } else {
+                isEnabled = false
+                onBackPressedDispatcher.onBackPressed()
             }
-    }
-
-    private fun setupNavMenu() {
-        navView.setNavigationItemSelectedListener { menuItem ->
-            when (menuItem.itemId) {
-                R.id.nav_home -> navController.navigate(R.id.nav_home)
-                R.id.nav_suppliers -> navController.navigate(R.id.nav_suppliers)
-                R.id.nav_calendar -> if (userType == "Supplier") {
-                    navController.navigate(R.id.nav_supplier_calendar)
-                }
-                R.id.nav_edit_supplier -> if (userType == "Supplier") {
-                    navController.navigate(R.id.nav_edit_supplier)
-                }
-                R.id.nav_all_suppliers -> navController.navigate(R.id.nav_all_suppliers)
-                R.id.nav_tips_and_checklist -> navController.navigate(R.id.nav_tips_and_checklist)
-                R.id.nav_favorites -> navController.navigate(R.id.nav_favorites)
-                R.id.nav_profile -> navController.navigate(R.id.nav_profile)
-                R.id.nav_logout -> {
-                    FirebaseAuth.getInstance().signOut()
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    finish()
-                }
-            }
-            drawerLayout.closeDrawer(GravityCompat.START)
-            true
         }
+
+        RoleManager.load(object : RoleManager.Callback {
+            override fun onRoleLoaded(role: String, supplierId: String?) {
+                currentRole = role
+                currentUserSupplierId = supplierId
+                applyDrawerForRole()
+                openDefaultDestination()
+            }
+
+            override fun onNoUser() {
+                currentRole = "client"
+                currentUserSupplierId = null
+                applyDrawerForRole()
+                openDefaultDestination()
+            }
+        })
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment_content_main)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    private fun applyDrawerForRole() {
+        val menuRes = if (currentRole == "supplier") {
+            R.menu.supplier_main_drawer
+        } else {
+            R.menu.client_main_drawer
+        }
+        binding.navView.menu.clear()
+        binding.navView.inflateMenu(menuRes)
+    }
+
+    private fun openDefaultDestination() {
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_favorites -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.nav_host_fragment_content_main, FavoritesFragment())
+                    .addToBackStack(null)
+                    .commit()
+            }
+            R.id.nav_supplier_dashboard -> {
+                startActivity(Intent(this, SupplierDashboardActivity::class.java))
+            }
+            R.id.nav_supplier_gallery -> {
+                val id = currentUserSupplierId ?: return true
+                startActivity(Intent(Intent.ACTION_VIEW, "letsgetweddi://gallery/manage/$id".toUri()))
+            }
+            R.id.nav_supplier_availability -> {
+                val id = currentUserSupplierId ?: return true
+                startActivity(Intent(Intent.ACTION_VIEW, "letsgetweddi://availability/$id".toUri()))
+            }
+        }
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
     }
 }

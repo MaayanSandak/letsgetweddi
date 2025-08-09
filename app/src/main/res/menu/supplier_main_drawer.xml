@@ -1,41 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
-
-        <item
-            android:id="@+id/nav_home"
-            android:title="Home" />
-
-        <item
-            android:id="@+id/nav_suppliers"
-            android:title="Suppliers" />
-
-        <item
-            android:id="@+id/nav_calendar"
-            android:title="Manage Calendar" />
-
-        <item
-            android:id="@+id/nav_edit_supplier"
-            android:title="Edit Supplier Details" />
-
-        <item
-            android:id="@+id/nav_tips_and_checklist"
-            android:title="Tips and Checklist" />
-
-        <item
-            android:id="@+id/nav_favorites"
-            android:title="Favorites" />
-
-        <item
-            android:id="@+id/nav_profile"
-            android:title="Profile" />
-
-        <item
-            android:id="@+id/nav_logout"
-            android:title="Logout" />
-
-        <item
-            android:id="@+id/nav_all_suppliers"
-            android:title="All Suppliers" />
-
-    </group>
+    <item android:id="@+id/nav_home" android:title="Home" />
+    <item android:id="@+id/nav_supplier_dashboard" android:title="My dashboard" />
+    <item android:id="@+id/nav_supplier_gallery" android:title="Manage gallery" />
+    <item android:id="@+id/nav_supplier_availability" android:title="Manage availability" />
+    <item android:id="@+id/nav_chats" android:title="Chats" />
 </menu>

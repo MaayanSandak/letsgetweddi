@@ -21,43 +21,48 @@ class SupplierAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(supplier: Supplier) {
-            binding.textName.text = supplier.name
-            binding.textDescription.text = supplier.description
-            binding.textLocation.text = supplier.location
-            Picasso.get().load(supplier.imageUrl).into(binding.imageSupplier)
+            val context = binding.root.context
+
+            binding.textName.text = supplier.name ?: ""
+            binding.textDescription.text = supplier.description ?: ""
+            binding.textLocation.text = supplier.location ?: ""
+
+            val imageUrl = supplier.imageUrl
+            if (!imageUrl.isNullOrEmpty()) {
+                Picasso.get().load(imageUrl).into(binding.imageSupplier)
+            } else {
+                binding.imageSupplier.setImageDrawable(null)
+            }
 
             binding.root.setOnClickListener {
-                val context = binding.root.context
-                val intent = Intent(context, ProviderDetailsActivity::class.java)
-                intent.putExtra("id", supplier.id)
-                intent.putExtra("name", supplier.name)
-                intent.putExtra("description", supplier.description)
-                intent.putExtra("location", supplier.location)
-                intent.putExtra("imageUrl", supplier.imageUrl)
-                intent.putExtra("phone", supplier.phone)
-                intent.putExtra("category", supplier.category)
+                val intent = Intent(context, ProviderDetailsActivity::class.java).apply {
+                    putExtra("id", supplier.id)
+                    putExtra("name", supplier.name)
+                    putExtra("description", supplier.description)
+                    putExtra("location", supplier.location)
+                    putExtra("imageUrl", supplier.imageUrl)
+                    putExtra("phone", supplier.phone)
+                    putExtra("category", supplier.category)
+                }
                 context.startActivity(intent)
             }
 
-            if (isFavorites) {
-                binding.buttonRemove.visibility = View.VISIBLE
-                binding.buttonRemove.setOnClickListener {
-                    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
-                    val supplierId = supplier.id ?: return@setOnClickListener
+            binding.buttonRemove.visibility = if (isFavorites) View.VISIBLE else View.GONE
+            binding.buttonRemove.setOnClickListener {
+                val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return@setOnClickListener
+                val supplierId = supplier.id ?: return@setOnClickListener
 
-                    FirebaseDatabase.getInstance().getReference("favorites")
-                        .child(userId)
-                        .child(supplierId)
-                        .removeValue()
-
-                    val position = adapterPosition
-                    if (position != RecyclerView.NO_POSITION) {
-                        suppliers.removeAt(position)
-                        notifyItemRemoved(position)
+                FirebaseDatabase.getInstance().getReference("favorites")
+                    .child(uid)
+                    .child(supplierId)
+                    .removeValue()
+                    .addOnSuccessListener {
+                        val index = bindingAdapterPosition
+                        if (index != RecyclerView.NO_POSITION) {
+                            suppliers.removeAt(index)
+                            notifyItemRemoved(index)
+                        }
                     }
-                }
-            } else {
-                binding.buttonRemove.visibility = View.GONE
             }
         }
     }
